@@ -1,0 +1,33 @@
+leafs:
+  hosts:
+    leaf01:
+      ansible_host: 127.0.0.1
+      sample_port: 3433
+    leaf02:
+      ansible_host: 127.0.0.1
+      sample_port: 3433
+
+spines:
+  hosts:
+    spine01:
+      ansible_host: 127.0.0.1
+      iox_port: 3433
+    spine02:
+      ansible_host: 127.0.0.1
+
+network:
+  children:
+    leafs:
+    spines:
+
+webservers:
+  hosts:
+    webserver01:
+      ansible_host: 127.0.0.1
+    webserver02:
+      ansible_host: 127.0.0.1
+
+datacenter:
+  children:
+    network:
+    webservers:

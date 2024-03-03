@@ -1,0 +1,52 @@
+- name: My first play
+  hosts: leaf01
+  connection: local
+  tasks:
+   - name: Set local variable
+     set_fact:
+      server_name: app
+
+   - name: Ping my hosts
+     ansible.builtin.ping:
+
+   - name: Print message
+     ansible.builtin.debug:
+      msg: Hello world
+
+   - name: Print another message
+     ansible.builtin.debug:
+      msg: "{{ inventory_hostname }} {{ sample_port }}"
+     failed_when: sample_port == 3432
+
+- name: Second play
+  hosts: leaf02
+  connection: local
+  tasks:
+    - name: Block in second play
+      block:
+        - name: Print in second play
+          ansible.builtin.debug:
+            msg: "{{ server_name }} {{ host_specific }} {{ name }} {{ laptop_version }}"
+          when: sample_port == 3433 
+      rescue:
+        - name: Rescuing server name
+          debug:
+            msg: Server name is used for leaf01 , but i am using leaf02
+
+- name: loops play
+  hosts: leaf01
+  connection: local
+  tasks:
+    - name: Create multiple users using list of users
+      ansible.builtin.debug:
+        msg: "The user ({{ item }}) is been created from the list provided"
+      loop:
+        - user1
+        - user2
+        - user3
+    - name: Create users using the range function
+      ansible.builtin.debug:
+        msg: "The user - user{{ item }} is been created using the range function"
+      loop: "{{ range(1,4) }}"
+
+

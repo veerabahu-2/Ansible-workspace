@@ -1,0 +1,3 @@
+# host_vars/host_var.yml
+host_specific: Test2
+name: leaf02
