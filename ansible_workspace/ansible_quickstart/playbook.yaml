@@ -19,7 +19,7 @@
      failed_when: sample_port == 3432
 
 - name: Second play
-  hosts: leaf02
+  hosts: leaf01
   connection: local
   tasks:
     - name: Block in second play
@@ -49,4 +49,40 @@
         msg: "The user - user{{ item }} is been created using the range function"
       loop: "{{ range(1,4) }}"
 
+- name: Assert Play
+  hosts: leaf01
+  connection: local
+  tasks:
+    - name: Checking 'msg' arguement
+      ansible.builtin.assert:
+        that:
+          - sample_port <= 4000
+          - sample_port >= 3000
+        msg: "'my_param' must be between 0 and 100"
 
+- name: Add host to group
+  hosts: leaf01
+  connection: local
+  tasks:
+    - name: Adding host to leaf group
+      ansible.builtin.add_host:
+        name: additional_host
+        ansible_host: 127.0.0.1
+        sample_port: 3434
+        groups:
+          - leafs
+          - spines
+          
+    - name: Printing current hostname
+      debug:
+        # msg: "List of hosts in leaf group {{ groups['leafs'] }}"
+        msg: "Host {{ item }} - ansible_host: {{ hostvars[item].ansible_host }}"
+      with_items: "{{ groups['leafs'] }}" 
+      ignore_errors: yes
+    
+    - name: Printing current hostname
+      debug:
+        # msg: "List of hosts in leaf group {{ groups['leafs'] }}"
+        msg: "Host {{ item }} - ansible_host: {{ hostvars[item].ansible_host }}"
+      with_items: "{{ groups['spines'] }}" 
+      ignore_errors: yes
